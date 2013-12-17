@@ -44,7 +44,9 @@ public class activity_singleplayer extends Activity {
 
         this.pongView = (P0ngView) findViewById(R.id.p0ngView);
 
-        this.pongView.setPlayerControl(true, false);
+        // argument 1 is top/left player
+        // argument 2 is bottom/right player
+        this.pongView.setPlayerControl(false, true);
         try {
             this.pongView.update();
         } catch(NullPointerException e) {
