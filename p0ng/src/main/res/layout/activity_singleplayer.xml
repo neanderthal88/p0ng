@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/black">
+
+    <com.lilottapps.p0ng.views.P0ngView
+        android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/p0ngView"
+    android:background="@color/black">
+    </com.lilottapps.p0ng.views.P0ngView>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+    </RelativeLayout>
+</FrameLayout>

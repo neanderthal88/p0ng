@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <!-- Layout for our volume bar -->
+    <!-- TODO: get the textview above the seekbar -->
+    <SeekBar
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sbMusicVolume"
+        android:progress="@integer/volumeSeekBarIncrement"
+        android:secondaryProgress="@integer/maxMusicVolume"
+        android:max="@integer/maxMusicVolume"
+        style="@style/optionsSeekBar" />
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:labelFor="@id/sbMusicVolume"
+        android:id="@+id/tvSBMusicLabel"
+        android:text="@string/tvCBMusicLabel"
+        style="@style/optionsTextView" />
+    <!-- End Layout for our volume bar -->
+
+
+    <!-- Layout for our volume bar -->
+    <!-- TODO: get the textview above the seekbar -->
+    <SeekBar
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sbEffectsVolume"
+        android:progress="@integer/volumeSeekBarIncrement"
+        android:secondaryProgress="@integer/maxEffectsVolume"
+        android:max="@integer/maxEffectsVolume"
+        style="@style/optionsSeekBar" />
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:labelFor="@id/sbEffectsVolume"
+        android:id="@+id/tvCBEffectsLabel"
+        android:text="@string/tvCBEffectsLabel"
+        style="@style/optionsTextView" />
+    <!-- End Layout for our volume bar -->
+
+
+    <!-- button to save data -->
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btnSave"
+        android:id="@+id/buttonOptionsSave"
+        style="@style/homeScreenButtons"
+        />
+
+</LinearLayout>

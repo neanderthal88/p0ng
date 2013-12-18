@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Regionalized names for AI strategy -->
+    <string-array name="labels_ai_strategies">
+        <item>Prediction</item>
+        <item>Exact</item>
+        <item>Follow</item>
+    </string-array>
+
+    <!-- Don't change these during regionalization -->
+    <string-array name="values_ai_strategies">
+        <item>PREDI</item>
+        <item>EXACT</item>
+        <item>FOLLO</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="maxEffectsVolume">100</integer>
+    <integer name="maxMusicVolume">100</integer>
+    <integer name="volumeSeekBarIncrement">10</integer>
+</resources>
