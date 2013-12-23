@@ -233,9 +233,9 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
 
         this.ball.move();
 
-        if((this.ball.y < (this.leftPaddle.getTop() + (float)100))) {
-            Log.d(TAG, "Ball is: " + Float.toString(this.ball.y) + " | paddle is: " + this.leftPaddle.getTop());
-        }
+        //if((this.ball.y < (this.leftPaddle.getTop() + (float)100))) {
+            //Log.d(TAG, "Ball is: " + Float.toString(this.ball.y) + " | paddle is: " + this.leftPaddle.getTop());
+        //}
 
         // Shake it up if it appears to not be moving vertically
         if(py == this.ball.y && this.ball.serving() == false) {
@@ -286,7 +286,7 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
     }
 
     protected void handleTopFastBounce(Paddle paddle, float px, float py) {
-        if(this.ball.isNorthBound()) return;
+        if(!this.ball.isNorthBound()) return;
 
         float tx = this.ball.x;
         float ty = this.ball.y - Ball.RADIUS;
@@ -311,7 +311,7 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
     }
 
     protected void handleBottomFastBounce(Paddle p, float px, float py) {
-        if(!this.ball.isNorthBound()) return;
+        if(this.ball.isNorthBound()) return;
         // The x variable of our ball, we don't need the radius because
         // the x-coordinated side will never hit the paddle
         float bx = this.ball.x;
@@ -352,7 +352,10 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
          * 2) ball.x + radius > paddle.left
          * 3) ball.x + radius < paddle.right
          */
-        if(((this.ball.x + Ball.RADIUS) > p.getLeft()) && ((this.ball.x + Ball.RADIUS) < p.getRight())) {
+        //if(((this.ball.x + Ball.RADIUS) > p.getLeft()) && ((this.ball.x + Ball.RADIUS) < p.getRight())
+         //&& (((this.ball.x + ball.RADIUS) < p.getTop()) && ((this.ball.x + ball.RADIUS) > p.getBottom()))) {
+        //if(((this.ball.y + Ball.RADIUS) <= p.getTop())){ // && ((this.ball.y + Ball.RADIUS) >= p.getBottom())) {
+        if((this.ball.y + Ball.RADIUS) >= p.getBottom()) {
             Log.d(TAG, "We are inside the bounds of the paddle!");
         }
 
