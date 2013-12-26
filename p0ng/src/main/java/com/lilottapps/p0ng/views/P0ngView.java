@@ -1,5 +1,6 @@
 package com.lilottapps.p0ng.views;
 
+        import java.util.ArrayList;
         import java.util.Random;
 
         import android.content.Context;
@@ -26,6 +27,7 @@ package com.lilottapps.p0ng.views;
 
         import com.lilottapps.p0ng.R;
         import com.lilottapps.p0ng.handlers.InputHandler;
+        import com.lilottapps.p0ng.objects.ArtificialIntelligence;
         import com.lilottapps.p0ng.objects.Ball;
         import com.lilottapps.p0ng.objects.Paddle;
 
@@ -110,6 +112,11 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
 
     /** Flags indicating who is a player */
     private boolean leftPaddlePlayer = false, rightPaddlePlayer = false;
+
+    /** PowerUps that are available **/
+    private ArrayList<?> powerups;
+
+    private ArtificialIntelligence ai;
 
     /**
      * An overloaded class that repaints this view in a separate thread.
@@ -243,10 +250,10 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         }
 
         // Do some basic paddle AI
-        if(!leftPaddle.player) doAI(leftPaddle, rightPaddle);
+        if(!leftPaddle.player) this.ai.doAI(leftPaddle, rightPaddle, this.ball);
         else leftPaddle.move();
 
-        if(!rightPaddle.player) doAI(rightPaddle, leftPaddle);
+        if(!rightPaddle.player) this.ai.doAI(rightPaddle, leftPaddle, this.ball);
         else rightPaddle.move();
 
         handleBounces(px,py);
@@ -295,11 +302,6 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         float dyp = ty - paddle.getBottom();
         float xc = tx + (tx - ptx) * dyp / (ty - pty);
 
-        //Log.d(TAG, "===============handleTopFastBounce===================");
-        //Log.d(TAG, "ty: " + ty + " | pBottom: " + paddle.getBottom() + " | pty: " + pty + " | xc: " + xc +
-        //        " | pLeft: " + paddle.getLeft() + " | xc: " + xc + " | pRight: " + paddle.getRight());
-        //Log.d(TAG, "===============handleTopFastBounce===================");
-
         if(ty < paddle.getBottom() && pty > paddle.getBottom()
                 && xc > paddle.getLeft() && xc < paddle.getRight()) {
             this.ball.x = xc;
@@ -322,29 +324,6 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         float pby = py + Ball.RADIUS;
         float dyp = by - this.rightPaddle.getTop();
         float xc = bx + (bx - pbx) * dyp / (pby - by);
-/*
-        Log.d(TAG, "=============HANDLEBOTTOMFASTBOUNCE===================");
-        Log.d(TAG, "Is by: " + by + " > paddle.top: " + p.getTop());
-        Log.d(TAG, "Is pby: " + pby + " < paddle.top: " + p.getTop());
-        Log.d(TAG, "Is xc: " + xc + " > paddle.left: " + p.getLeft());
-        Log.d(TAG, "Is xc: " + xc + " < paddle.right: " + p.getRight());
-        Log.d(TAG, "=============HANDLEBOTTOMFASTBOUNCE===================");
-
-        if(by > p.getTop()) {
-            Log.d(TAG, "by is greater than top");
-            if (pby < p.getTop()) {
-                Log.d(TAG, "pby is less than get top");
-                if(xc > p.getLeft()) {
-                    Log.d(TAG, "xc is greater than left");
-                    if(xc < p.getRight()) {
-                        Log.d(TAG, "xc is less than right");
-                    }
-                }
-            }
-        }
-        */
-        /*if(by > this.rightPaddle.getTop() && pby < this.rightPaddle.getTop()
-                && xc > this.rightPaddle.getLeft() && xc < this.rightPaddle.getRight()) {*/
 
         /**
          * TODO: check for these 3 cases:
@@ -352,17 +331,8 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
          * 2) ball.x + radius > paddle.left
          * 3) ball.x + radius < paddle.right
          */
-        //if(((this.ball.x + Ball.RADIUS) > p.getLeft()) && ((this.ball.x + Ball.RADIUS) < p.getRight())
-         //&& (((this.ball.x + ball.RADIUS) < p.getTop()) && ((this.ball.x + ball.RADIUS) > p.getBottom()))) {
-        //if(((this.ball.y + Ball.RADIUS) <= p.getTop())){ // && ((this.ball.y + Ball.RADIUS) >= p.getBottom())) {
-        if((this.ball.y + Ball.RADIUS) >= p.getBottom()) {
-            Log.d(TAG, "We are inside the bounds of the paddle!");
-        }
-
-
         if(by > this.rightPaddle.getTop() && pby < this.rightPaddle.getTop()
                 && xc > this.rightPaddle.getLeft() && xc < this.rightPaddle.getRight()) {
-            Log.d(TAG, "handleBottomFastBounce");
 
             this.ball.x = xc;
             this.ball.y = this.rightPaddle.getTop() - Ball.RADIUS;
@@ -371,98 +341,6 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
             increaseDifficulty();
         }
     }
-
-    private void doAI(Paddle cpu, Paddle opponent) {
-        switch(mAiStrategy) {
-            case 2:	aiFollow(cpu); break;
-            case 1:	aiExact(cpu); break;
-            default: aiPrediction(cpu,opponent); break;
-        }
-    }
-
-    /**
-     * A generalized Pong AI player. Takes a Rect object and a Ball, computes where the ball will
-     * be when ball.y == rect.y, and tries to move toward that x-coordinate. If the ball is moving
-     * straight it will try to clip the ball with the edge of the paddle.
-     * @param cpu
-     */
-    private void aiPrediction(Paddle cpu, Paddle opponent) {
-        Ball ball = new Ball(this.ball, getHeight(), getWidth());
-        ball.setSpeed((float)60);
-
-        // Special case: move torward the center if the ball is blinking
-        if(this.ball.serving()) {
-            cpu.destination = getWidth() / 2;
-            cpu.move(true);
-            return;
-        }
-
-        // Something is wrong if vy = 0.. let's wait until things fix themselves
-        if(ball.vy == 0) return;
-
-        // Y-Distance from ball to Rect 'cpu'
-        float cpuDist = Math.abs(ball.y - cpu.centerY());
-        // Y-Distance to opponent.
-        float oppDist = Math.abs( ball.y - opponent.centerY() );
-
-        // Distance between two paddles.
-        float paddleDistance = Math.abs(cpu.centerY() - opponent.centerY());
-
-        // Is the ball coming at us?
-        boolean coming = (cpu.centerY() < ball.y && ball.vy < 0)
-                || (cpu.centerY() > ball.y && ball.vy > 0);
-
-        // Total amount of x-distance the ball covers
-        float total = ((((coming) ? cpuDist : oppDist + paddleDistance)) / Math.abs(ball.vy)) * Math.abs( ball.vx );
-
-        // Playable width of the stage
-        float playWidth = getWidth() - 2 * Ball.RADIUS;
-
-        // calculate the distance from a
-        float wallDist = (!ball.isEastBound()) ? ball.x - Ball.RADIUS : playWidth - ball.x + Ball.RADIUS;
-
-        // Effective x-translation left over after first bounce
-        float remains = (total - wallDist) % playWidth;
-
-        // Bounces the ball will incur
-        int bounces = (int) ((total) / playWidth);
-
-        boolean left = (bounces % 2 == 0) ? !ball.isEastBound() : ball.isEastBound();
-
-        cpu.destination = getWidth() / 2;
-
-        // Now we need to compute the final x. That's all that matters.
-        if(bounces == 0) {
-            cpu.destination = (int) (ball.x + total * Math.signum(ball.vx));
-        }
-        else if(left) {
-            cpu.destination = (int) (Ball.RADIUS + remains);
-        }
-        else { // The ball is going right...
-            cpu.destination = (int) ((Ball.RADIUS + playWidth) - remains);
-        }
-
-        // Try to give it a little kick if vx = 0
-        int salt = (int) (System.currentTimeMillis() / 10000);
-        Random r = new Random((long) (cpu.centerY() + ball.vx + ball.vy + salt));
-        int width = cpu.getWidth();
-        cpu.destination = (int) bound(
-                cpu.destination + r.nextInt(2 * width - (width / 5)) - width + (width / 10),
-                0, getWidth()
-        );
-        cpu.move(true);
-    }
-
-    private void aiExact(Paddle cpu) {
-        cpu.destination = (int) this.ball.x;
-        cpu.setPosition(cpu.destination);
-    }
-
-    private void aiFollow(Paddle cpu) {
-        cpu.destination = (int) this.ball.x;
-        cpu.move(true);
-    }
-    /***************************** END AI ***********************************/
 
     /**
      * Knocks up the framerate a bit to keep it difficult.
@@ -494,9 +372,22 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
      * its inflated size.
      */
     private void initializeP0ngView() {
-        initializePause();
-        initializePaddles();
-        initializeBall();
+        this.initializePause();
+        this.initializePaddles();
+        this.initializeAI();
+        this.initializeBall();
+    }
+
+    private void initializeAI() {
+        // Special case, this is an AI vs AI game
+        if(!this.leftPaddle.player && !this.rightPaddle.player) {
+            this.ai = new ArtificialIntelligence(this.leftPaddle, this.rightPaddle);
+        } else if (!this.leftPaddle.player) {
+            this.ai = new ArtificialIntelligence(this.leftPaddle);
+        } else {
+            this.ai = new ArtificialIntelligence(this.rightPaddle);
+        }
+        this.ai.setDimensions(getHeight(), getWidth());
     }
 
     private void initializePause() {
