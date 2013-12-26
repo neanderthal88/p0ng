@@ -5,6 +5,7 @@ package com.lilottapps.p0ng.views;
         import java.util.Random;
 
         import android.content.Context;
+        import android.content.ContextWrapper;
         import android.content.SharedPreferences;
         import android.content.res.Resources;
         import android.graphics.Canvas;
@@ -258,6 +259,10 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         if(!rightPaddle.player) this.ai.doAI(rightPaddle, leftPaddle, this.ball);
         else rightPaddle.move();
 
+        if(this.powerups.powerUpReady) {
+            Log.d(TAG, "A Powerup is ready!");
+        }
+
         handleBounces(px,py);
 
         // See if all is lost
@@ -382,7 +387,8 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
     }
 
     private void initializePowerUps() {
-        powerups.getAvailablePowerUps(new File("powerups/"));
+        this.powerups = new PowerUps(getHeight(), getWidth(), getContext(),
+                this.leftPaddle, this.rightPaddle, this.ball);
     }
 
     private void initializeAI() {
@@ -419,7 +425,7 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         Rect playerTwo = new Rect(0, 7 * getHeight() / 8, getWidth(), getHeight());
 
         // leftPaddle: color,
-        leftPaddle = new Paddle(Color.WHITE, playerOne.bottom + PADDING, getHeight(), getWidth());
+        leftPaddle = new Paddle(Color.RED, playerOne.bottom + PADDING, getHeight(), getWidth());
 
         rightPaddle = new Paddle(Color.WHITE, playerTwo.top - PADDING - Paddle.PADDLE_THICKNESS, getHeight(), getWidth());
 
@@ -498,15 +504,15 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         Context context = getContext();
 
         // Draw the paddles / touch boundaries
-        leftPaddle.draw(canvas);
-        rightPaddle.draw(canvas);
+        this.leftPaddle.draw(canvas);
+        this.rightPaddle.draw(canvas);
 
         // Draw touchboxes if needed
-        if(gameRunning() && leftPaddle.player && mCurrentState == State.Running)
-            leftPaddle.drawTouchbox(canvas);
+        if(gameRunning() && this.leftPaddle.player && mCurrentState == State.Running)
+            this.leftPaddle.drawTouchbox(canvas);
 
-        if(gameRunning() && rightPaddle.player && mCurrentState == State.Running)
-            rightPaddle.drawTouchbox(canvas);
+        if(gameRunning() && this.rightPaddle.player && mCurrentState == State.Running)
+            this.rightPaddle.drawTouchbox(canvas);
 
         // Draw ball stuff
         mPaint.setStyle(Style.FILL);
@@ -522,12 +528,12 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
 
             if(!leftPaddle.player) {
                 mPaint.setColor(Color.RED);
-                canvas.drawText(join, getWidth() / 2 - joinw / 2, leftPaddle.touchCenterY(), mPaint);
+                canvas.drawText(join, getWidth() / 2 - joinw / 2, this.leftPaddle.touchCenterY(), mPaint);
             }
 
             if(!rightPaddle.player) {
                 mPaint.setColor(Color.BLUE);
-                canvas.drawText(join, getWidth() / 2 - joinw / 2, rightPaddle.touchCenterY(), mPaint);
+                canvas.drawText(join, getWidth() / 2 - joinw / 2, this.rightPaddle.touchCenterY(), mPaint);
             }
         }
 
@@ -554,13 +560,14 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         // Draw a 'lives' counter
         mPaint.setColor(Color.WHITE);
         mPaint.setStyle(Style.FILL_AND_STROKE);
+        // Paint the lives left on the screen!
         for(int i = 0; i < leftPaddle.getLives(); i++) {
             canvas.drawCircle(Ball.RADIUS + PADDING + i * (2 * Ball.RADIUS + PADDING),
                     PADDING + Ball.RADIUS,
                     Ball.RADIUS,
                     mPaint);
         }
-
+        // Paint the lives left on the screen!
         for(int i = 0; i < rightPaddle.getLives(); i++) {
             canvas.drawCircle(Ball.RADIUS + PADDING + i * (2 * Ball.RADIUS + PADDING),
                     getHeight() - PADDING - Ball.RADIUS,

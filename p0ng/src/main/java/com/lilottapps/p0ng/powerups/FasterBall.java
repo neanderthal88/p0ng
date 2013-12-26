@@ -8,22 +8,24 @@ import com.lilottapps.p0ng.objects.PowerUps;
  */
 public class FasterBall extends PowerUps {
 
+    public FasterBall() {
+
+    }
+/*
     public FasterBall(Ball b) {
 
     }
 
-    @Override
     public int timeLeft() {
         return 0;
     }
 
-    @Override
     public void affectedPlayer(int i) {
 
     }
 
-    @Override
     public void powerUpUseTime(int t) {
 
     }
+    */
 }

@@ -188,7 +188,7 @@ public class Paddle {
     public boolean collides(Ball b) {
         boolean t = b.x >= this.rect.left && b.x <= this.rect.right &&
                 b.y >= this.rect.top - Ball.RADIUS && b.y <= this.rect.bottom + Ball.RADIUS;
-        Log.d(TAG, "Collides: " + Boolean.toString(t));
+        //Log.d(TAG, "Collides: " + Boolean.toString(t));
         return t;
     }
 
