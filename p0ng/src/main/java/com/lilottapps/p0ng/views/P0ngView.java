@@ -1,5 +1,6 @@
 package com.lilottapps.p0ng.views;
 
+        import java.io.File;
         import java.util.ArrayList;
         import java.util.Random;
 
@@ -30,6 +31,7 @@ package com.lilottapps.p0ng.views;
         import com.lilottapps.p0ng.objects.ArtificialIntelligence;
         import com.lilottapps.p0ng.objects.Ball;
         import com.lilottapps.p0ng.objects.Paddle;
+        import com.lilottapps.p0ng.objects.PowerUps;
 
 /**
  * This class is the main viewing window for the Pong game. All the game's
@@ -114,7 +116,7 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
     private boolean leftPaddlePlayer = false, rightPaddlePlayer = false;
 
     /** PowerUps that are available **/
-    private ArrayList<?> powerups;
+    private PowerUps powerups;
 
     private ArtificialIntelligence ai;
 
@@ -376,6 +378,11 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         this.initializePaddles();
         this.initializeAI();
         this.initializeBall();
+        this.initializePowerUps();
+    }
+
+    private void initializePowerUps() {
+        powerups.getAvailablePowerUps(new File("powerups/"));
     }
 
     private void initializeAI() {

@@ -5,10 +5,10 @@ import com.lilottapps.p0ng.objects.PowerUps;
 /**
  * Created by jason on 12/25/13.
  */
-public class Wall{
+public class Wall extends PowerUps{
 
     public Wall() {
-        //super();
+
     }
 
 
