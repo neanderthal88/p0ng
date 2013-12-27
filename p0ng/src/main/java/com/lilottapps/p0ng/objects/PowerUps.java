@@ -2,6 +2,8 @@ package com.lilottapps.p0ng.objects;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.Log;
 import com.lilottapps.p0ng.powerups.*;
 
@@ -44,9 +46,11 @@ public class PowerUps {
     // List of classes of powerups that are avaiable to draw
     private ArrayList<PowerUps> powerUpClasses = new ArrayList<PowerUps>();
     // flag to determine if a powerup is available to draw
-    public boolean powerUpReady;
+    public boolean powerUpActive;
     // Our random number generator
     Random random = new Random();
+    protected int x;
+    protected int y;
 
     public PowerUps() {
         //this.powerUpClasses.add(new FasterBall());
@@ -56,8 +60,8 @@ public class PowerUps {
         this.powerUpClasses.add(new Wall());
         this.powerUpClasses.add(new WiderPaddle());
         this.powerUpClasses.add(new HidePaddle());
-        this.setTimeLeft();
-        this.powerUpReady = false;
+        this.powerUpActive = false;
+        this.setCircleVariables();
     }
 
     public PowerUps(int h, int w, Context c, Paddle p1, Paddle p2, Ball b) {
@@ -74,30 +78,23 @@ public class PowerUps {
             //this.powerUpClasses.add(new Wall());
             //this.powerUpClasses.add(new WiderPaddle());
             //this.powerUpClasses.add(new HidePaddle());
-            this.setTimeLeft();
-            this.powerUpReady = false;
+            this.powerUpActive = false;
+            this.setCircleVariables();
     }
 
     /** Timing control for power-up readiness **/
-    public void setTimeLeft() {
-        this.timeLeftForPowerup = (int) Math.ceil(this.random.nextInt(10) + BASE_POWERUP_RECHARGE_TIME);
-    }
-
-    public void decreaseTimeLeft() {
-        this.timeLeftForPowerup--;
-        if(this.timeLeftForPowerup <1) {
-            this.powerUpReady = true;
-        }
-    }
-
-    public int getTimeLeft() {
-        return this.timeLeftForPowerup;
+    public int getPowerUpTimer() {
+        return (int) Math.ceil(this.random.nextInt(10) + BASE_POWERUP_RECHARGE_TIME);
     }
     /** End Timing control for power-up readiness **/
 
-    public void powerUpUseTime(int t) {
+    public int powerUpUseTime() {
         // use this for 10-20 seconds
-        this.useTime = (int) Math.ceil(Math.random()*10) + BASE_USE_TIME * 1000;
+        return (int) Math.ceil(Math.random()*10) + BASE_USE_TIME * 1000;
+    }
+
+    public boolean activePowerUp() {
+        return this.powerUpActive;
     }
 
     public void affectedPlayer(int i) {
@@ -106,9 +103,9 @@ public class PowerUps {
 
     // this should return a powerups
     public int getNewPowerUp() {
-        if(this.powerUpReady) {
+        if(this.powerUpActive) {
             // set this to false as we are getting a new powerup!
-            this.powerUpReady = false;
+            this.powerUpActive = false;
             //return this.powerUpClasses.get(random.nextInt()%this.powerUpClasses.size());
             Log.d(TAG, "We are retrieving a power-up");
             return 1;
@@ -117,8 +114,21 @@ public class PowerUps {
         }
     }
 
-    public void draw(Canvas c) {
+    /**
+     * To draw the new location of a power-up call this
+     */
+    public void setCircleVariables() {
+        Log.d(TAG, "Setting the variables for our power-up circle");
+        int radius = 10;
+        this.x = (int)(Math.random() * ((this.height) + 1)) + radius;
+        this.y = (int)(Math.random() * ((this.width) + 1)) + radius;
+    }
 
+    public void draw(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.YELLOW);
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        canvas.drawCircle(this.x, this.y, 10, paint);
     }
 
     public List<PowerUps> getAvailablePowerUpsClasses() {

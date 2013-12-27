@@ -37,8 +37,6 @@ package com.lilottapps.p0ng.views;
 /**
  * This class is the main viewing window for the Pong game. All the game's
  * logic takes place within this class as well.
- * @author OEP
- *
  */
 public class P0ngView extends View implements OnTouchListener, OnKeyListener {
     /** Debug tag */
@@ -117,15 +115,18 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
     private boolean leftPaddlePlayer = false, rightPaddlePlayer = false;
 
     /** PowerUps that are available **/
-    private PowerUps powerups;
+    private PowerUps powerUps;
 
     private ArtificialIntelligence ai;
+
+    /** Timer for determining when the next power-up is available **/
+    private int timeUntilPowerUp;
+    /** Timer for determining when the power-up is expired **/
+    private int timeToUsePowerUp;
 
     /**
      * An overloaded class that repaints this view in a separate thread.
      * Calling P0ngView.update() should initiate the thread.
-     * @author OEP
-     *
      */
     class RefreshHandler extends Handler {
         @Override
@@ -255,11 +256,32 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         if(!rightPaddle.player) this.ai.doAI(rightPaddle, leftPaddle, this.ball);
         else rightPaddle.move();
 
-        // Power-up management
-        if(this.powerups.powerUpReady) {
-            //this.powerups.getNewPowerUp();
+        /**
+         * 1) Make sure the timer is done
+         * 2) draw a power up to the screen (done in onDraw())
+         * 3) check for collisions
+         * 4) if collided then start an active timer
+         * 5) once timer is done reset timer
+         * 6) remove powerup
+         */
+        if(this.timeUntilPowerUp < 1) {
+            if (!this.powerUps.activePowerUp()) {
+                // handle collision
+                this.handlePowerUpCollision(px, py);
+                // get powerup active time
+                if(true) {
+
+                }
+                // decrease powerup active time
+
+                // reset time and remove powerup
+
+                // restart the timeUntilPowerUp timer
+                // this.timeUntilPowerUp = this.powerUps.getPowerUpTimer();
+            }
+            // get a powerup and draw to screen
         } else {
-            //this.powerups.decreaseTimeLeft();
+            this.timeUntilPowerUp--;
         }
 
         handleBounces(px,py);
@@ -280,10 +302,12 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         }
     }
 
+    protected void handlePowerUpCollision(float px, float py) {
+
+    }
+
     protected void handleBounces(float px, float py) {
-        // I swapped this, it should be: leftPaddle
         handleTopFastBounce(this.leftPaddle, px, py);
-        // I swapped this, it should be rightPaddle
         handleBottomFastBounce(this.rightPaddle, px, py);
 
         // Handle bouncing off of a wall
@@ -385,35 +409,11 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         this.initializePowerUps();
     }
 
-    private void initializePowerUps() {
-        this.powerups = new PowerUps(getHeight(), getWidth(), getContext(),
-                this.leftPaddle, this.rightPaddle, this.ball);
-    }
-
-    private void initializeAI() {
-        // Special case, this is an AI vs AI game
-        if(!this.leftPaddle.player && !this.rightPaddle.player) {
-            this.ai = new ArtificialIntelligence(this.leftPaddle, this.rightPaddle);
-        } else if (!this.leftPaddle.player) {
-            this.ai = new ArtificialIntelligence(this.leftPaddle);
-        } else {
-            this.ai = new ArtificialIntelligence(this.rightPaddle);
-        }
-        this.ai.setDimensions(getHeight(), getWidth());
-    }
-
     private void initializePause() {
         int min = Math.min(getWidth() / 4, getHeight() / 4);
         int xmid = getWidth() / 2;
         int ymid = getHeight() / 2;
         mPauseTouchBox = new Rect(xmid - min, ymid - min, xmid + min, ymid + min);
-    }
-
-    private void initializeBall() {
-        //this.ball = new Ball();
-        // Alter this...
-        this.ball = new Ball();
-        ball.setWindowSize(getHeight(), getWidth());
     }
 
     private void initializePaddles() {
@@ -440,6 +440,31 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         rightPaddle.setLives(STARTING_LIVES + mLivesModifier);
     }
 
+    private void initializeAI() {
+        // Special case, this is an AI vs AI game
+        if(!this.leftPaddle.player && !this.rightPaddle.player) {
+            this.ai = new ArtificialIntelligence(this.leftPaddle, this.rightPaddle);
+        } else if (!this.leftPaddle.player) {
+            this.ai = new ArtificialIntelligence(this.leftPaddle);
+        } else {
+            this.ai = new ArtificialIntelligence(this.rightPaddle);
+        }
+        this.ai.setDimensions(getHeight(), getWidth());
+    }
+
+    private void initializeBall() {
+        //this.ball = new Ball();
+        // Alter this...
+        this.ball = new Ball();
+        ball.setWindowSize(getHeight(), getWidth());
+    }
+
+    private void initializePowerUps() {
+        this.powerUps = new PowerUps(getHeight(), getWidth(), getContext(),
+                this.leftPaddle, this.rightPaddle, this.ball);
+        this.timeUntilPowerUp = this.powerUps.getPowerUpTimer();
+    }
+    /** End the Initialization methods **/
     /**
      * Reset ball to an initial state
      */
@@ -453,33 +478,6 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
 
     protected float bound(float x, float low, float hi) {
         return Math.max(low, Math.min(x, hi));
-    }
-
-    /**
-     * Use for keeping track of a position.
-     * @author pkilgo
-     *
-     */
-    class Point {
-        private int x, y;
-        Point() {
-            x = 0; y = 0;
-        }
-
-        Point(int x, int y) {
-            this.x = x; this.y = y;
-        }
-
-        public int getX() { return x; }
-        public int getY() { return y ; }
-        public void set(double d, double e) { this.x = (int) d; this.y = (int) e; }
-
-        public void translate(int i, int j) { this.x += i; this.y += j; }
-
-        @Override
-        public String toString() {
-            return "Point: (" + x + ", " + y + ")";
-        }
     }
 
     public void onSizeChanged(int w, int h, int ow, int oh) {
@@ -514,6 +512,11 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         mPaint.setColor(Color.WHITE);
 
         this.ball.draw(canvas);
+
+        // Drawing powerup to the screen
+        if(this.timeUntilPowerUp < 1 && !this.powerUps.activePowerUp()) {
+            this.powerUps.draw(canvas);
+        }
 
         // If either is a not a player, blink and let them know they can join in!
         // This blinks with the ball.
