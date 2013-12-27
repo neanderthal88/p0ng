@@ -157,38 +157,23 @@ public class Paddle {
     }
 
     public void draw(Canvas canvas) {
-        //try {
-            //this.paint.setColor(this.color);
-            //this.paint.setStyle(Paint.Style.FILL);
             canvas.drawRect(this.rect, this.paint);
-        //} catch(NullPointerException e) {
-        //    Log.d(TAG, "canvas is null!?");
-        //}
     }
 
     public void drawTouchbox(Canvas canvas) {
-        //try {
         this.paint.setColor(this.color);
         this.paint.setStyle(Paint.Style.STROKE);
-        //} catch (NullPointerException e) {
-        //    Log.d(TAG, "our touchbox is null!?");
-        //}
         // Heuristic for deciding which line to paint:
         // draw the one closest to middle
         int mid = this.windowHeight / 2;
         int top = Math.abs(this.touch.top - mid), bot = Math.abs(this.touch.bottom - mid);
         float y = (top < bot) ? this.touch.top : this.touch.bottom;
-        //try {
         canvas.drawLine(this.touch.left, y, this.touch.right, y, this.paint);
-        //} catch (NullPointerException e) {
-        //    Log.d(TAG, "we can't drawLine because paint is null!?");
-        //}
     }
 
     public boolean collides(Ball b) {
         boolean t = b.x >= this.rect.left && b.x <= this.rect.right &&
                 b.y >= this.rect.top - Ball.RADIUS && b.y <= this.rect.bottom + Ball.RADIUS;
-        //Log.d(TAG, "Collides: " + Boolean.toString(t));
         return t;
     }
 

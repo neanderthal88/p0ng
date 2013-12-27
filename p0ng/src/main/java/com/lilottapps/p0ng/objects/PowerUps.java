@@ -16,10 +16,17 @@ import java.util.Random;
 public class PowerUps {
 
     final String TAG = "p0ng";
+    // Const: Base length time we can use a power-up
     final int BASE_USE_TIME = 10;
+    // Const: Length of time between power-ups
     final int BASE_POWERUP_RECHARGE_TIME = 30;
+    // Length of time we can use a power-up
     int useTime;
+    // Which player owns this power-up
     int affectedPlayer;
+    // Time before power-up is ready
+    int timeLeftForPowerup;
+
     // height of window
     int height;
     // width of window
@@ -49,6 +56,7 @@ public class PowerUps {
         this.powerUpClasses.add(new Wall());
         this.powerUpClasses.add(new WiderPaddle());
         this.powerUpClasses.add(new HidePaddle());
+        this.setTimeLeft();
         this.powerUpReady = false;
     }
 
@@ -66,29 +74,46 @@ public class PowerUps {
             //this.powerUpClasses.add(new Wall());
             //this.powerUpClasses.add(new WiderPaddle());
             //this.powerUpClasses.add(new HidePaddle());
+            this.setTimeLeft();
             this.powerUpReady = false;
     }
 
-    public int timeLeft(int timePassed) {
-        return Math.abs(timePassed - BASE_POWERUP_RECHARGE_TIME);
+    /** Timing control for power-up readiness **/
+    public void setTimeLeft() {
+        this.timeLeftForPowerup = (int) Math.ceil(this.random.nextInt(10) + BASE_POWERUP_RECHARGE_TIME);
     }
+
+    public void decreaseTimeLeft() {
+        this.timeLeftForPowerup--;
+        if(this.timeLeftForPowerup <1) {
+            this.powerUpReady = true;
+        }
+    }
+
+    public int getTimeLeft() {
+        return this.timeLeftForPowerup;
+    }
+    /** End Timing control for power-up readiness **/
 
     public void powerUpUseTime(int t) {
         // use this for 10-20 seconds
-        this.useTime = (int) Math.ceil(Math.random()*10) + BASE_USE_TIME;
+        this.useTime = (int) Math.ceil(Math.random()*10) + BASE_USE_TIME * 1000;
     }
 
     public void affectedPlayer(int i) {
         this.affectedPlayer = i;
     }
 
-    public PowerUps getNewPowerUp() {
+    // this should return a powerups
+    public int getNewPowerUp() {
         if(this.powerUpReady) {
             // set this to false as we are getting a new powerup!
             this.powerUpReady = false;
-            return this.powerUpClasses.get(random.nextInt()%this.powerUpClasses.size());
+            //return this.powerUpClasses.get(random.nextInt()%this.powerUpClasses.size());
+            Log.d(TAG, "We are retrieving a power-up");
+            return 1;
         } else {
-            return null;
+            return 1;
         }
     }
 

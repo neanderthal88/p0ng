@@ -243,10 +243,6 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
 
         this.ball.move();
 
-        //if((this.ball.y < (this.leftPaddle.getTop() + (float)100))) {
-            //Log.d(TAG, "Ball is: " + Float.toString(this.ball.y) + " | paddle is: " + this.leftPaddle.getTop());
-        //}
-
         // Shake it up if it appears to not be moving vertically
         if(py == this.ball.y && this.ball.serving() == false) {
             this.ball.randomAngle();
@@ -259,8 +255,11 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         if(!rightPaddle.player) this.ai.doAI(rightPaddle, leftPaddle, this.ball);
         else rightPaddle.move();
 
+        // Power-up management
         if(this.powerups.powerUpReady) {
-            Log.d(TAG, "A Powerup is ready!");
+            //this.powerups.getNewPowerUp();
+        } else {
+            //this.powerups.decreaseTimeLeft();
         }
 
         handleBounces(px,py);
@@ -415,7 +414,6 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         // Alter this...
         this.ball = new Ball();
         ball.setWindowSize(getHeight(), getWidth());
-        Log.d(TAG, "Initializing a new ball");
     }
 
     private void initializePaddles() {
@@ -428,9 +426,6 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         leftPaddle = new Paddle(Color.RED, playerOne.bottom + PADDING, getHeight(), getWidth());
 
         rightPaddle = new Paddle(Color.WHITE, playerTwo.top - PADDING - Paddle.PADDLE_THICKNESS, getHeight(), getWidth());
-
-        Log.d(TAG, "leftPaddle's height: " + leftPaddle.getTop());
-        Log.d(TAG, "Relative to windowHeight: " + getHeight());
 
         leftPaddle.setTouchbox(playerOne);
         rightPaddle.setTouchbox( playerTwo );

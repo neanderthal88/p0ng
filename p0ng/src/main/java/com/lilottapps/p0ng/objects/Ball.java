@@ -149,7 +149,6 @@ public class Ball {
 
     public void bouncePaddle(Paddle p) {
         double angle;
-        Log.d(TAG, "bouncing off paddle");
         // up-right case
         if(this.angle >= Math.PI) {
             angle = 4 * Math.PI - this.angle;
