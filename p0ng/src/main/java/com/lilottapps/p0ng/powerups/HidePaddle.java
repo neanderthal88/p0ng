@@ -1,5 +1,6 @@
 package com.lilottapps.p0ng.powerups;
 
+import com.lilottapps.p0ng.objects.Paddle;
 import com.lilottapps.p0ng.objects.PowerUps;
 
 /**
@@ -8,6 +9,10 @@ import com.lilottapps.p0ng.objects.PowerUps;
 public class HidePaddle extends PowerUps {
 
     public HidePaddle() {
+
+    }
+
+    public HidePaddle(Paddle p) {
 
     }
 }

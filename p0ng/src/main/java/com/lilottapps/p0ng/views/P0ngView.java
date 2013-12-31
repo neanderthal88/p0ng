@@ -79,8 +79,13 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
 
     /** Mutes sounds when true */
     private boolean mMuted = false;
-
+    /** Paddles for our players **/
     private Paddle leftPaddle, rightPaddle;
+
+    /** PowerUps that are available **/
+    private ArrayList<PowerUps> powerUps = new ArrayList<PowerUps>();
+
+    private int TOTAL_POWERUPS = 5;
 
     /** Touch boxes for various functions. These are assigned in initialize() */
     private Rect mPauseTouchBox;
@@ -114,9 +119,7 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
     /** Flags indicating who is a player */
     private boolean leftPaddlePlayer = false, rightPaddlePlayer = false;
 
-    /** PowerUps that are available **/
-    private PowerUps powerUps;
-
+    /** Our AI module that handles single player **/
     private ArtificialIntelligence ai;
 
     /** Timer for determining when the next power-up is available **/
@@ -265,7 +268,7 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
          * 6) remove powerup
          */
         if(this.timeUntilPowerUp < 1) {
-            if (!this.powerUps.activePowerUp()) {
+            //if (!this.powerUps.activePowerUp()) {
                 // handle collision
                 this.handlePowerUpCollision(px, py);
                 // get powerup active time
@@ -280,9 +283,8 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
                 // this.timeUntilPowerUp = this.powerUps.getPowerUpTimer();
             }
             // get a powerup and draw to screen
-        } else {
+        //} else {
             this.timeUntilPowerUp--;
-        }
 
         handleBounces(px,py);
 
@@ -303,7 +305,26 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
     }
 
     protected void handlePowerUpCollision(float px, float py) {
+        float tx = this.ball.x;
+        float ty = this.ball.y - Ball.RADIUS;
 
+        for(int i = 0; i<TOTAL_POWERUPS;i++) {
+            if(this.ball.isNorthBound()) {
+                this.powerUps.get(i).setWhichPlayer(1);
+            } else {
+                this.powerUps.get(i).setWhichPlayer(2);
+            }
+            // See if there is a collision
+            if(tx == this.powerUps.get(i).x || ty == this.powerUps.get(i).y) {
+                // Activate our current power up
+                this.powerUps.get(i).activatePowerUp();
+                // remove the power up that has been activated
+                this.powerUps.remove(i);
+                // add a new power to it's place
+                this.powerUps.add(i, new PowerUps(getHeight(), getWidth(), getContext(),
+                        this.leftPaddle, this.rightPaddle, this.ball));
+            }
+        }
     }
 
     protected void handleBounces(float px, float py) {
@@ -460,9 +481,11 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
     }
 
     private void initializePowerUps() {
-        this.powerUps = new PowerUps(getHeight(), getWidth(), getContext(),
-                this.leftPaddle, this.rightPaddle, this.ball);
-        this.timeUntilPowerUp = this.powerUps.getPowerUpTimer();
+        for(int i = 0; i<TOTAL_POWERUPS; i++) {
+            this.powerUps.add(new PowerUps(getHeight(), getWidth(), getContext(),
+                    this.leftPaddle, this.rightPaddle, this.ball));
+        }
+        // this.timeUntilPowerUp = this.powerUps.getPowerUpTimer();
     }
     /** End the Initialization methods **/
     /**
@@ -514,8 +537,10 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         this.ball.draw(canvas);
 
         // Drawing powerup to the screen
-        if(this.timeUntilPowerUp < 1 && !this.powerUps.activePowerUp()) {
-            this.powerUps.draw(canvas);
+        if(this.timeUntilPowerUp < 1) {
+            for(int i=0; i<TOTAL_POWERUPS; i++) {
+                this.powerUps.get(i).draw(canvas);
+            }
         }
 
         // If either is a not a player, blink and let them know they can join in!

@@ -42,44 +42,62 @@ public class PowerUps {
     // App context
     Context appContext;
     // Probably deprecated
-    private List<String> powerUps = Arrays.asList("FasterBall", "FasterPaddle", "SlowerBall", "Wall", "WiderPaddle");
+    private List<String> powerUpsList = Arrays.asList("FasterBall", "FasterPaddle", "HidePaddle", "SlowerBall", "SlowerPaddle", "Wall", "WiderPaddle");
     // List of classes of powerups that are avaiable to draw
-    private ArrayList<PowerUps> powerUpClasses = new ArrayList<PowerUps>();
+    //private ArrayList<PowerUps> powerUpClasses = new ArrayList<PowerUps>();
     // flag to determine if a powerup is available to draw
     public boolean powerUpActive;
     // Our random number generator
     Random random = new Random();
-    protected int x;
-    protected int y;
+    public int x;
+    public int y;
+    private PowerUps powerUp = null;
+    // Lets us know which player controls the power up
+    public int whichPlayer = 0;
 
     public PowerUps() {
-        //this.powerUpClasses.add(new FasterBall());
-        //this.powerUpClasses.add(new FasterPaddle());
-        this.powerUpClasses.add(new SlowerBall());
-        this.powerUpClasses.add(new SlowerPaddle());
-        this.powerUpClasses.add(new Wall());
-        this.powerUpClasses.add(new WiderPaddle());
-        this.powerUpClasses.add(new HidePaddle());
         this.powerUpActive = false;
         this.setCircleVariables();
+        this.powerUp = this.getNewPowerUp();
     }
 
     public PowerUps(int h, int w, Context c, Paddle p1, Paddle p2, Ball b) {
-            this.width = w;
-            this.height = h;
-            this.appContext = c;
-            this.playerOne = p1;
-            this.playerTwo = p2;
-            this.ball = b;
-            //this.powerUpClasses.add(new FasterBall());
-            //this.powerUpClasses.add(new FasterPaddle());
-            //this.powerUpClasses.add(new SlowerBall());
-            //this.powerUpClasses.add(new SlowerPaddle());
-            //this.powerUpClasses.add(new Wall());
-            //this.powerUpClasses.add(new WiderPaddle());
-            //this.powerUpClasses.add(new HidePaddle());
-            this.powerUpActive = false;
-            this.setCircleVariables();
+        this.width = w;
+        this.height = h;
+        this.appContext = c;
+        this.playerOne = p1;
+        this.playerTwo = p2;
+        this.ball = b;
+        this.powerUpActive = false;
+        this.setCircleVariables();
+        this.powerUp = this.getNewPowerUp();
+    }
+
+    private PowerUps getNewPowerUp() {
+        Paddle p = null;
+        if(this.whichPlayer == 1) {
+            p = this.playerOne;
+        } else {
+            p = this.playerTwo;
+        }
+        switch((int)Math.ceil(this.random.nextInt(this.powerUpsList.size()))) {
+            case 0:
+                return new FasterBall();
+            case 1:
+                return new FasterPaddle();
+            case 2:
+                return new HidePaddle();
+            case 3:
+                return new SlowerBall();
+            case 4:
+                return new SlowerPaddle();
+            case 5:
+                return new Wall();
+            case 6:
+                return new WiderPaddle();
+            default:
+                return new FasterBall();
+        }
     }
 
     /** Timing control for power-up readiness **/
@@ -101,25 +119,18 @@ public class PowerUps {
         this.affectedPlayer = i;
     }
 
-    // this should return a powerups
-    public int getNewPowerUp() {
-        if(this.powerUpActive) {
-            // set this to false as we are getting a new powerup!
-            this.powerUpActive = false;
-            //return this.powerUpClasses.get(random.nextInt()%this.powerUpClasses.size());
-            Log.d(TAG, "We are retrieving a power-up");
-            return 1;
-        } else {
-            return 1;
-        }
+    public void setWhichPlayer(int d) {
+        this.whichPlayer = d;
     }
-
     /**
      * To draw the new location of a power-up call this
      */
     public void setCircleVariables() {
         Log.d(TAG, "Setting the variables for our power-up circle");
         int radius = 10;
+        /**
+         * TODO: subtract out the radius so we cannot draw offscreen
+         */
         this.x = (int)(Math.random() * ((this.height) + 1)) + radius;
         this.y = (int)(Math.random() * ((this.width) + 1)) + radius;
     }
@@ -131,11 +142,11 @@ public class PowerUps {
         canvas.drawCircle(this.x, this.y, 10, paint);
     }
 
-    public List<PowerUps> getAvailablePowerUpsClasses() {
-        return this.powerUpClasses;
+    public List<String> getAvailablePowerUpsStrings() {
+        return this.powerUpsList;
     }
 
-    public List<String> getAvailablePowerUpsStrings() {
-        return this.powerUps;
+    public void activatePowerUp() {
+
     }
 }

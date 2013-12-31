@@ -1,5 +1,6 @@
 package com.lilottapps.p0ng.powerups;
 
+import com.lilottapps.p0ng.objects.Ball;
 import com.lilottapps.p0ng.objects.PowerUps;
 
 /**
@@ -7,6 +8,10 @@ import com.lilottapps.p0ng.objects.PowerUps;
  */
 public class SlowerBall extends PowerUps {
     public SlowerBall() {
+
+    }
+
+    public SlowerBall(Ball b) {
 
     }
 }

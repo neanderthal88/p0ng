@@ -11,7 +11,7 @@ public class FasterBall extends PowerUps {
     public FasterBall() {
 
     }
-/*
+
     public FasterBall(Ball b) {
 
     }
@@ -27,5 +27,5 @@ public class FasterBall extends PowerUps {
     public void powerUpUseTime(int t) {
 
     }
-    */
+
 }
