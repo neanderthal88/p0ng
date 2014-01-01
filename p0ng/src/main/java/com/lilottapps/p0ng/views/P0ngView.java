@@ -423,6 +423,7 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
      * its inflated size.
      */
     private void initializeP0ngView() {
+        Log.d(TAG, "Initializing our environment");
         this.initializePause();
         this.initializePaddles();
         this.initializeAI();
@@ -474,8 +475,6 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
     }
 
     private void initializeBall() {
-        //this.ball = new Ball();
-        // Alter this...
         this.ball = new Ball();
         ball.setWindowSize(getHeight(), getWidth());
     }
@@ -539,6 +538,9 @@ public class P0ngView extends View implements OnTouchListener, OnKeyListener {
         // Drawing powerup to the screen
         if(this.timeUntilPowerUp < 1) {
             for(int i=0; i<TOTAL_POWERUPS; i++) {
+                if(!this.powerUps.get(i).isCanvasSet()) {
+                    this.powerUps.get(i).setCanvas(canvas);
+                }
                 this.powerUps.get(i).draw(canvas);
             }
         }

@@ -41,10 +41,6 @@ public class PowerUps {
     Ball ball;
     // App context
     Context appContext;
-    // Probably deprecated
-    private List<String> powerUpsList = Arrays.asList("FasterBall", "FasterPaddle", "HidePaddle", "SlowerBall", "SlowerPaddle", "Wall", "WiderPaddle");
-    // List of classes of powerups that are avaiable to draw
-    //private ArrayList<PowerUps> powerUpClasses = new ArrayList<PowerUps>();
     // flag to determine if a powerup is available to draw
     public boolean powerUpActive;
     // Our random number generator
@@ -56,9 +52,10 @@ public class PowerUps {
     public int whichPlayer = 0;
 
     public PowerUps() {
-        this.powerUpActive = false;
-        this.setCircleVariables();
-        this.powerUp = this.getNewPowerUp();
+        /**
+         * Don't do anything, we need an empty constructor
+         * If we do any work here an overflow will occur
+         */
     }
 
     public PowerUps(int h, int w, Context c, Paddle p1, Paddle p2, Ball b) {
@@ -74,13 +71,15 @@ public class PowerUps {
     }
 
     private PowerUps getNewPowerUp() {
+        Log.d(TAG, "getting new power up");
         Paddle p = null;
         if(this.whichPlayer == 1) {
             p = this.playerOne;
         } else {
             p = this.playerTwo;
         }
-        switch((int)Math.ceil(this.random.nextInt(this.powerUpsList.size()))) {
+        // Number of power up options
+        switch((int)Math.ceil(this.random.nextInt(7))) {
             case 0:
                 return new FasterBall();
             case 1:
@@ -142,11 +141,10 @@ public class PowerUps {
         canvas.drawCircle(this.x, this.y, 10, paint);
     }
 
-    public List<String> getAvailablePowerUpsStrings() {
-        return this.powerUpsList;
-    }
-
     public void activatePowerUp() {
 
     }
+
+    public void setCanvas(Canvas c) {this.canvas = c;}
+    public boolean isCanvasSet() {return this.canvas.getHeight() < 1;}
 }
